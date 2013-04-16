@@ -1,6 +1,7 @@
 
 type Parser{T}
-
+    result::Union(Nothing,T)
+    remaininginput
 end
 
 function sequence{T}(f::Function, seq::Array{T,1})
