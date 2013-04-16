@@ -4,11 +4,11 @@ type Parser{T}
     remaininginput
 end
 
-function sequence{T}(f::Function, seq::Array{T,1})
+function sequence{T}(f::Array{Function,1})
     
 end
 
-function branch{T}(f::Function, options::Array{Parser{T},1})
+function branch{T}(f::Array{Function,1})
 
 end
 
