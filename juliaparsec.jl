@@ -49,9 +49,55 @@ function zeroormore(f::Function)
     end
 end
 
-
 ## usage example
 
+## Calculator example
+abstract CalcToken
+type Plus <: CalcToken end
+type Digit <: CalcToken
+  value :: Int
+end
+
+function parse_plus(xs)
+  if beginswith(xs,"+")
+    return (Plus(),xs[2:])
+  end
+  return Nothing()
+end
+
+function parse_digit(xs)
+  m = match(r"\d+",xs)
+  if m != Nothing()
+    return (Digit(int(m.match)),xs[length(m.match)+1:])
+  end
+  return Nothing()
+end
+
+parse_one_expr = sequence([parse_digit,zeroormore(sequence([parse_plus,parse_digit]))])
+
+function interpreter(line)
+  result = parse_one_expr(line)
+  if result == Nothing()
+    return
+  end
+  expr,remainder = result
+  first = expr[1]
+  rest = expr[2]
+  sum = first.value
+  for e = rest
+    if e != Plus()
+      sum += e.value
+    end
+  end
+  return sum
+end
+
+@show interpreter("1+2")
+@show interpreter("1+2+3+4")
+@show interpreter("1+2+3+4+5+6+7+8+12345")
+@show interpreter(join(ones(Int,100000),"+"))
+
+## silly test example
 abstract Token123
 type Dog <: Token123 end
 type Cat <: Token123 end
