@@ -29,6 +29,21 @@ function branch(fs::Array{Function,1})
     end
 end
 
+function branch2(fs::Array{Function,1})
+  fs = [quote 
+          r = $f(xs)
+          if r != nothing
+            return r
+          end
+        end for f=fs]
+  f = quote function(xs)
+      end
+      end
+  append!(f.args[2].args[2].args,eval(convert(Array{Any,1},fs)))
+  push!(f.args[2].args[2].args,:(return nothing))
+  eval(f)
+end
+
 function zeroormore(f::Function)
     function (xs)
         acc = Array(Any,0)
@@ -98,6 +113,13 @@ myparser = branch([parse_cat,parse_dog])
 @show myparser("dogcat")
 @show myparser("catdog")
 @show myparser("god")
+
+myparser2 = branch2([parse_cat,parse_dog])
+@show myparser2("dog")
+@show myparser2("cat")
+@show myparser2("dogcat")
+@show myparser2("catdog")
+@show myparser2("god")
 
 myseqparser = sequence([parse_cat,parse_dog])
 @show myseqparser("dog")
