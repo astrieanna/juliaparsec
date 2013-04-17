@@ -17,6 +17,46 @@ function sequence(fs::Array{Function,1})
     end
 end
 
+function sequence2(fs::Array{Function,1})
+    function (xs)
+        result = Array(Any,length(fs))
+        x = fs[1](xs)
+        if x == nothing
+            return nothing
+        end
+        result[1], xs = x
+        x = fs[2](xs)
+        if x == nothing
+            return nothing
+        end
+        result[2], xs = x
+        return (result, xs)
+    end
+end
+
+
+function sequence3(fs::Array{Function,1})
+    function (xs)
+        result = Array(Any,length(fs))
+        x = fs[1](xs)
+        if x == nothing
+            return nothing
+        end
+        result[1], xs = x
+        x = fs[2](xs)
+        if x == nothing
+            return nothing
+        end
+        result[2], xs = x
+        x = fs[3](xs)
+        if x == nothing
+            return nothing
+        end
+        result[3], xs = x
+        return (result, xs)
+    end
+end
+
 function branch(fs::Array{Function,1})
     function (xs)
         for f = fs
@@ -78,6 +118,7 @@ function parse_digit(xs)
 end
 
 parse_one_expr = sequence([parse_digit,zeroormore(sequence([parse_plus,parse_digit]))])
+parse_one_expr_codegen = sequence2([parse_digit,zeroormore(sequence2([parse_plus,parse_digit]))])
 
 function interpreter(line)
     result = parse_one_expr(line)
@@ -94,10 +135,31 @@ function interpreter(line)
     return sum
 end
 
+function interpreter_codegen(line)
+    result = parse_one_expr_codegen(line)
+    if result == nothing
+        return
+    end
+    expr, remainder = result
+    first = expr[1]
+    rest = expr[2]
+    sum = first.value
+    for e = rest
+      sum += e[2].value
+    end
+    return sum
+end
+
+
 @show interpreter("1+2")
 @show interpreter("1+2+3+4")
 @show interpreter("1+2+3+4+5+6+7+8+12345")
 @time @show interpreter(join(ones(Int,5000),"+"))
+
+@show interpreter_codegen("1+2")
+@show interpreter_codegen("1+2+3+4")
+@show interpreter_codegen("1+2+3+4+5+6+7+8+12345")
+@time @show interpreter_codegen(join(ones(Int,5000),"+"))
 
 ## silly test example
 abstract Token123
@@ -127,6 +189,13 @@ myseqparser = sequence([parse_cat,parse_dog])
 @show myseqparser("dogcat")
 @show myseqparser("catdog")
 @show myseqparser("god")
+
+myseqparser2 = sequence2([parse_cat,parse_dog])
+@show myseqparser2("dog")
+@show myseqparser2("cat")
+@show myseqparser2("dogcat")
+@show myseqparser2("catdog")
+@show myseqparser2("god")
 
 myzeroparser = zeroormore(parse_cat)
 @show myzeroparser("dog")
