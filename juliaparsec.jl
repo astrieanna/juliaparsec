@@ -25,14 +25,14 @@ end
 
 function branch(fs::Array{Function,1})
     return (xs) -> begin
-      for f = fs
-        x = f(xs)
-        if x != Nothing()
-          return x
+        for f = fs
+            x = f(xs)
+            if x != Nothing()
+                return x
+            end
         end
-      end
-      return Nothing()
-   end
+        return Nothing()
+    end
 end
 
 function zeroormore(f::Function)
@@ -46,7 +46,7 @@ function zeroormore(f::Function)
             x = f(rest)
         end
         return (acc, rest)
-    end
+     end
 end
 
 ## usage example
@@ -59,37 +59,37 @@ type Digit <: CalcToken
 end
 
 function parse_plus(xs)
-  if beginswith(xs,"+")
-    return (Plus(),xs[2:])
-  end
-  return Nothing()
+    if beginswith(xs,"+")
+        return (Plus(),xs[2:])
+    end
+    return Nothing()
 end
-
+    
 function parse_digit(xs)
-  m = match(r"\d+",xs)
-  if m != Nothing()
-    return (Digit(int(m.match)),xs[length(m.match)+1:])
-  end
-  return Nothing()
+    m = match(r"\d+",xs)
+    if m != Nothing()
+        return (Digit(int(m.match)),xs[length(m.match)+1:])
+    end
+    return Nothing()
 end
 
 parse_one_expr = sequence([parse_digit,zeroormore(sequence([parse_plus,parse_digit]))])
 
 function interpreter(line)
-  result = parse_one_expr(line)
-  if result == Nothing()
-    return
-  end
-  expr,remainder = result
-  first = expr[1]
-  rest = expr[2]
-  sum = first.value
-  for e = rest
-    if e != Plus()
-      sum += e.value
+    result = parse_one_expr(line)
+    if result == Nothing()
+        return
     end
-  end
-  return sum
+    expr,remainder = result
+    first = expr[1]
+    rest = expr[2]
+    sum = first.value
+    for e = rest
+        if e != Plus()
+            sum += e.value
+        end
+    end
+    return sum
 end
 
 @show interpreter("1+2")
@@ -103,17 +103,17 @@ type Dog <: Token123 end
 type Cat <: Token123 end
 
 function parse_cat(xs)
-  if beginswith(xs,"cat")
-    return (Cat(),xs[4:])
-  end
-  return Nothing()
+    if beginswith(xs,"cat")
+        return (Cat(),xs[4:])
+    end
+    return Nothing()
 end
 
 function parse_dog(xs)
-  if beginswith(xs,"dog")
-    return (Dog(),xs[4:])
-  end
-  return Nothing()
+    if beginswith(xs,"dog")
+        return (Dog(),xs[4:])
+    end
+    return Nothing()
 end
 
 myparser = branch([parse_cat,parse_dog])
