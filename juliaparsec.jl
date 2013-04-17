@@ -1,5 +1,5 @@
 function sequence(fs::Array{Function,1})
-    return (xs) -> begin
+    function (xs)
         acc = Array(Any,length(fs))
         i = 1
         for f = fs
@@ -18,7 +18,7 @@ function sequence(fs::Array{Function,1})
 end
 
 function branch(fs::Array{Function,1})
-    return (xs) -> begin
+    function (xs)
         for f = fs
             x = f(xs)
             if x != nothing
@@ -30,7 +30,7 @@ function branch(fs::Array{Function,1})
 end
 
 function zeroormore(f::Function)
-    return (xs) -> begin
+    function (xs)
         acc = Array(Any,0)
         rest = xs
         x = f(xs)
@@ -52,12 +52,7 @@ type Digit <: CalcToken
   value :: Int
 end
 
-function parse_plus(xs)
-    if beginswith(xs,"+")
-        return (Plus(),xs[2:])
-    end
-    return nothing
-end
+parse_plus(xs) = beginswith(xs,"+") ? (Plus(),xs[2:]) : nothing
     
 function parse_digit(xs)
     m = match(r"\d+",xs)
@@ -74,7 +69,7 @@ function interpreter(line)
     if result == nothing
         return
     end
-    expr,remainder = result
+    expr, remainder = result
     first = expr[1]
     rest = expr[2]
     sum = first.value
@@ -87,29 +82,15 @@ end
 @show interpreter("1+2")
 @show interpreter("1+2+3+4")
 @show interpreter("1+2+3+4+5+6+7+8+12345")
-before = time()
-@show interpreter(join(ones(Int,5000),"+"))
-after = time()
-print("elapsed time of many adds: $(after - before))\n")
+@time @show interpreter(join(ones(Int,5000),"+"))
 
 ## silly test example
 abstract Token123
 type Dog <: Token123 end
 type Cat <: Token123 end
 
-function parse_cat(xs)
-    if beginswith(xs,"cat")
-        return (Cat(),xs[4:])
-    end
-    return nothing
-end
-
-function parse_dog(xs)
-    if beginswith(xs,"dog")
-        return (Dog(),xs[4:])
-    end
-    return nothing
-end
+parse_cat(xs) = beginswith(xs,"cat") ? (Cat(),xs[4:]) : nothing
+parse_dog(xs) = beginswith(xs,"dog") ? (Dog(),xs[4:]) : nothing
 
 myparser = branch([parse_cat,parse_dog])
 @show myparser("dog")
