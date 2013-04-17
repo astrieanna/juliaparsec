@@ -35,6 +35,20 @@ function branch(fs::Array{Function,1})
    end
 end
 
+function zeroormore(f::Function)
+    return (xs) -> begin
+        acc = Array(Any,0)
+        rest = xs
+        x = f(xs)
+        while(x != Nothing())            
+            result, rest = x
+            append!(acc, convert(Array{Any,1},[result]))
+            x = f(rest)
+        end
+        return (acc, rest)
+    end
+end
+
 
 ## usage example
 
@@ -69,6 +83,14 @@ myseqparser = sequence([parse_cat,parse_dog])
 @show myseqparser("dogcat")
 @show myseqparser("catdog")
 @show myseqparser("god")
+
+myzeroparser = zeroormore(parse_cat)
+@show myzeroparser("dog")
+@show myzeroparser("cat")
+@show myzeroparser("catcatcat")
+@show myzeroparser("dogcat")
+@show myzeroparser("catdog")
+@show myzeroparser("god")
 
 
 # function parse_dogcat() = branch([ sequence(['c','a','t']) do (_) -> Cat() end, sequence(['d','o','g']) do (_) -> Dog() end]) do (x) -> x end
