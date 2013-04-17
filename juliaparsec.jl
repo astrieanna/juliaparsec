@@ -1,27 +1,51 @@
 
-type Parser{T}
-    result::Union(Nothing,T)
-    remaininginput
+# type Parser{T}
+#     result::Union(Nothing,T)
+#     remaininginput
+# end
+
+function sequence(fs::Array{Function,1})
 end
 
-function sequence{T}(f::Array{Function,1})
-    
-end
-
-function branch{T}(f::Array{Function,1})
-
-end
-
-function parse{T}(p::Parser{T},t::Array{T,1})
-
+function branch(fs::Array{Function,1})
+    return (xs) -> begin
+      for f = fs
+        x = f(xs)
+        if x != Nothing()
+          return x
+        end
+      end
+      return Nothing()
+   end
 end
 
 
 ## usage example
 
-abstract Token
-type Dog <: Token end
-type Cat <: Token end
+abstract Token123
+type Dog <: Token123 end
+type Cat <: Token123 end
+
+function parse_cat(xs)
+  if beginswith(xs,"cat")
+    return (Cat(),xs[4:])
+  end
+  return Nothing()
+end
+
+function parse_dog(xs)
+  if beginswith(xs,"dog")
+    return (Dog(),xs[4:])
+  end
+  return Nothing()
+end
+
+myparser = branch([parse_cat,parse_dog])
+@show myparser("dog")
+@show myparser("cat")
+@show myparser("dogcat")
+@show myparser("god")
+
 
 # function parse_dogcat() = branch([ sequence(['c','a','t']) do (_) -> Cat() end, sequence(['d','o','g']) do (_) -> Dog() end]) do (x) -> x end
 
