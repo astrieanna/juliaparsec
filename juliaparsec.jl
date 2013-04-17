@@ -1,9 +1,3 @@
-
-# type Parser{T}
-#     result::Union(Nothing,T)
-#     remaininginput
-# end
-
 function sequence(fs::Array{Function,1})
     return (xs) -> begin
         acc = Array(Any,length(fs))
@@ -49,7 +43,7 @@ function zeroormore(f::Function)
     end
 end
 
-## usage example
+## Usage examples
 
 ## Calculator example
 abstract CalcToken
