@@ -87,7 +87,10 @@ end
 @show interpreter("1+2")
 @show interpreter("1+2+3+4")
 @show interpreter("1+2+3+4+5+6+7+8+12345")
-@show interpreter(join(ones(Int,1000),"+"))
+before = time()
+@show interpreter(join(ones(Int,5000),"+"))
+after = time()
+print("elapsed time of many adds: $(after - before))\n")
 
 ## silly test example
 abstract Token123
