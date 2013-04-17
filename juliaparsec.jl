@@ -5,6 +5,22 @@
 # end
 
 function sequence(fs::Array{Function,1})
+    return (xs) -> begin
+        acc = Array(Any,length(fs))
+        i = 1
+        for f = fs
+            x = f(xs)
+            if x != Nothing()
+                result, rest = x
+                xs = rest
+                acc[i] = result
+                i += 1
+            else
+                return Nothing()
+            end
+        end
+        return (acc, xs)
+    end
 end
 
 function branch(fs::Array{Function,1})
@@ -44,7 +60,15 @@ myparser = branch([parse_cat,parse_dog])
 @show myparser("dog")
 @show myparser("cat")
 @show myparser("dogcat")
+@show myparser("catdog")
 @show myparser("god")
+
+myseqparser = sequence([parse_cat,parse_dog])
+@show myseqparser("dog")
+@show myseqparser("cat")
+@show myseqparser("dogcat")
+@show myseqparser("catdog")
+@show myseqparser("god")
 
 
 # function parse_dogcat() = branch([ sequence(['c','a','t']) do (_) -> Cat() end, sequence(['d','o','g']) do (_) -> Dog() end]) do (x) -> x end
