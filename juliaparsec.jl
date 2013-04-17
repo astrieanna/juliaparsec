@@ -4,13 +4,13 @@ function sequence(fs::Array{Function,1})
         i = 1
         for f = fs
             x = f(xs)
-            if x != Nothing()
+            if x != nothing
                 result, rest = x
                 xs = rest
                 acc[i] = result
                 i += 1
             else
-                return Nothing()
+                return nothing
             end
         end
         return (acc, xs)
@@ -21,11 +21,11 @@ function branch(fs::Array{Function,1})
     return (xs) -> begin
         for f = fs
             x = f(xs)
-            if x != Nothing()
+            if x != nothing
                 return x
             end
         end
-        return Nothing()
+        return nothing
     end
 end
 
@@ -34,7 +34,7 @@ function zeroormore(f::Function)
         acc = Array(Any,0)
         rest = xs
         x = f(xs)
-        while(x != Nothing())            
+        while(x != nothing)            
             result, rest = x
             append!(acc, convert(Array{Any,1},[result]))
             x = f(rest)
@@ -56,22 +56,22 @@ function parse_plus(xs)
     if beginswith(xs,"+")
         return (Plus(),xs[2:])
     end
-    return Nothing()
+    return nothing
 end
     
 function parse_digit(xs)
     m = match(r"\d+",xs)
-    if m != Nothing()
+    if m != nothing
         return (Digit(int(m.match)),xs[length(m.match)+1:])
     end
-    return Nothing()
+    return nothing
 end
 
 parse_one_expr = sequence([parse_digit,zeroormore(sequence([parse_plus,parse_digit]))])
 
 function interpreter(line)
     result = parse_one_expr(line)
-    if result == Nothing()
+    if result == nothing
         return
     end
     expr,remainder = result
@@ -89,7 +89,7 @@ end
 @show interpreter("1+2")
 @show interpreter("1+2+3+4")
 @show interpreter("1+2+3+4+5+6+7+8+12345")
-@show interpreter(join(ones(Int,100000),"+"))
+@show interpreter(join(ones(Int,1000),"+"))
 
 ## silly test example
 abstract Token123
@@ -100,14 +100,14 @@ function parse_cat(xs)
     if beginswith(xs,"cat")
         return (Cat(),xs[4:])
     end
-    return Nothing()
+    return nothing
 end
 
 function parse_dog(xs)
     if beginswith(xs,"dog")
         return (Dog(),xs[4:])
     end
-    return Nothing()
+    return nothing
 end
 
 myparser = branch([parse_cat,parse_dog])
