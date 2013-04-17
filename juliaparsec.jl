@@ -70,17 +70,16 @@ function branch(fs::Array{Function,1})
 end
 
 function branch2(fs::Array{Function,1})
-  fs = [quote 
-          r = $f(xs)
-          if r != nothing
-            return r
-          end
-        end for f=fs]
-  f = quote function(xs)
+  f = quote function(xs) end end
+  append!(f.args[2].args[2].args, {
+    quote
+      r = $f(xs)
+      if r != nothing
+        return r
       end
-      end
-  append!(f.args[2].args[2].args,eval(convert(Array{Any,1},fs)))
-  push!(f.args[2].args[2].args,:(return nothing))
+    end for f=fs }
+  )
+  push!(f.args[2].args[2].args, :(return nothing))
   eval(f)
 end
 
