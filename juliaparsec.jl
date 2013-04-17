@@ -36,7 +36,7 @@ function zeroormore(f::Function)
         x = f(xs)
         while(x != nothing)            
             result, rest = x
-            append!(acc, convert(Array{Any,1},[result]))
+            push!(acc,result)
             x = f(rest)
         end
         return (acc, rest)
@@ -79,9 +79,7 @@ function interpreter(line)
     rest = expr[2]
     sum = first.value
     for e = rest
-        if e != Plus()
-            sum += e.value
-        end
+      sum += e[2].value
     end
     return sum
 end
