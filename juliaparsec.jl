@@ -92,6 +92,20 @@ end
 
 parse_one_expr = sequence([parse_digit,zeroormore(sequence([parse_plus,parse_digit]))])
 parse_one_expr_codegen = sequence2([parse_digit,zeroormore(sequence2([parse_plus,parse_digit]))])
+function parse_one_expr_hand(str)
+  arr = Array(Any,0)
+  result = parse_digit(str)
+  while result != nothing
+    x,rest = result
+    push!(arr,x)
+    result = parse_plus(rest)
+    if(result == nothing) return arr end
+    x,rest = result
+    push!(arr,x)
+    result = parse_digit(rest)
+  end
+  return nothing 
+end
 
 function interpreter(line)
     result = parse_one_expr(line)
@@ -123,7 +137,21 @@ function interpreter_codegen(line)
     return sum
 end
 
-numones = 5000
+function interpreter_hand(line)
+    result = parse_one_expr_hand(line)
+    if result == nothing
+        return
+    end
+    sum = 0
+    for e = result
+      if e != Plus()
+        sum += e.value
+      end
+    end
+    return sum
+end
+
+numones =  50000
 
 @show interpreter("1+2")
 @show interpreter("1+2+3+4")
@@ -135,6 +163,11 @@ onestxt = join(ones(Int,numones),"+")
 @show interpreter_codegen("1+2+3+4")
 @show interpreter_codegen("1+2+3+4+5+6+7+8+12345")
 @time @show interpreter_codegen(onestxt)
+
+@show interpreter_hand("1+2")
+@show interpreter_hand("1+2+3+4")
+@show interpreter_hand("1+2+3+4+5+6+7+8+12345")
+@time @show interpreter_hand(onestxt)
 
 ## silly test example
 abstract Token123
