@@ -17,44 +17,26 @@ function sequence(fs::Array{Function,1})
     end
 end
 
-function sequence2(fs::Array{Function,1})
-    function (xs)
-        result = Array(Any,length(fs))
-        x = fs[1](xs)
-        if x == nothing
-            return nothing
-        end
-        result[1], xs = x
-        x = fs[2](xs)
-        if x == nothing
-            return nothing
-        end
-        result[2], xs = x
-        return (result, xs)
+macro sequence_m(n)
+    if n != 0
+        :(1 + @sequence_m $(n-1))
+    else
+        0
     end
 end
 
-
-function sequence3(fs::Array{Function,1})
-    function (xs)
-        result = Array(Any,length(fs))
-        x = fs[1](xs)
+function sequence2(fs::Array{Function,1})
+    f = quote function(xs) end end
+    push!(f.args[2].args[2].args, :(result = Array(Any,length($fs))))
+    append!(f.args[2].args[2].args, { quote
+        x = $(fs[i])(xs)
         if x == nothing
             return nothing
         end
-        result[1], xs = x
-        x = fs[2](xs)
-        if x == nothing
-            return nothing
-        end
-        result[2], xs = x
-        x = fs[3](xs)
-        if x == nothing
-            return nothing
-        end
-        result[3], xs = x
-        return (result, xs)
-    end
+        result[$i], xs = x
+    end for i=1:length(fs)})
+    push!(f.args[2].args[2].args, :(return (result, xs)))
+    return eval(f)
 end
 
 function branch(fs::Array{Function,1})
@@ -149,16 +131,17 @@ function interpreter_codegen(line)
     return sum
 end
 
+numones = 5000
 
 @show interpreter("1+2")
 @show interpreter("1+2+3+4")
 @show interpreter("1+2+3+4+5+6+7+8+12345")
-@time @show interpreter(join(ones(Int,5000),"+"))
+@time @show interpreter(join(ones(Int,numones),"+"))
 
 @show interpreter_codegen("1+2")
 @show interpreter_codegen("1+2+3+4")
 @show interpreter_codegen("1+2+3+4+5+6+7+8+12345")
-@time @show interpreter_codegen(join(ones(Int,5000),"+"))
+@time @show interpreter_codegen(join(ones(Int,numones),"+"))
 
 ## silly test example
 abstract Token123
