@@ -136,12 +136,13 @@ numones = 5000
 @show interpreter("1+2")
 @show interpreter("1+2+3+4")
 @show interpreter("1+2+3+4+5+6+7+8+12345")
-@time @show interpreter(join(ones(Int,numones),"+"))
+onestxt = join(ones(Int,numones),"+")
+@time @show interpreter(onestxt)
 
 @show interpreter_codegen("1+2")
 @show interpreter_codegen("1+2+3+4")
 @show interpreter_codegen("1+2+3+4+5+6+7+8+12345")
-@time @show interpreter_codegen(join(ones(Int,numones),"+"))
+@time @show interpreter_codegen(onestxt)
 
 ## silly test example
 abstract Token123
@@ -151,6 +152,7 @@ type Cat <: Token123 end
 parse_cat(xs) = beginswith(xs,"cat") ? (Cat(),xs[4:]) : nothing
 parse_dog(xs) = beginswith(xs,"dog") ? (Dog(),xs[4:]) : nothing
 
+if(false)
 myparser = branch([parse_cat,parse_dog])
 @show myparser("dog")
 @show myparser("cat")
@@ -186,3 +188,13 @@ myzeroparser = zeroormore(parse_cat)
 @show myzeroparser("dogcat")
 @show myzeroparser("catdog")
 @show myzeroparser("god")
+end
+
+numseq = 1000
+cats = fill!(Array(Function,numseq),parse_cat)
+catstext = "cat"^numseq    
+seq1parser = sequence(cats)
+seq2parser = sequence2(cats)
+@time seq1parser(catstext)
+@time seq2parser(catstext)
+    
