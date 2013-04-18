@@ -84,10 +84,7 @@ parse_plus(xs) = beginswith(xs,"+") ? (Plus(),xs[2:]) : nothing
     
 function parse_digit(xs)
     m = match(r"\d+",xs)
-    if m != nothing
-        return (Digit(int(m.match)),xs[length(m.match)+1:])
-    end
-    return nothing
+    return m == nothing ? nothing : (Digit(int(m.match)),xs[length(m.match)+1:])
 end
 
 parse_one_expr = sequence([parse_digit,zeroormore(sequence([parse_plus,parse_digit]))])
