@@ -140,14 +140,30 @@ function interpreter_hand(line)
         return
     end
     sum = 0
-    for e = result
-      if e != Plus()
-        sum += e.value
+    for ex = result
+      if ex != Plus()
+        sum += ex.value
       end
     end
     return sum
 end
 
+function interpreter_regex(line)
+  fm = match(r"^(\d+)\+?",line).captures[1]
+  arr = Array(CalcToken,1)
+  arr[1] = Digit(int(fm))
+  for m in eachmatch(r"\+(\d+)"i,line[length(fm)+1:])
+        push!(arr,Plus())
+        push!(arr,Digit(int(m.captures[1])))
+  end
+  sum = 0
+  for ex=arr 
+    if ex != Plus()
+      sum += ex.value
+    end
+  end
+  return sum
+end
 numones =  50000
 
 @show interpreter("1+2")
@@ -165,6 +181,11 @@ onestxt = join(ones(Int,numones),"+")
 @show interpreter_hand("1+2+3+4")
 @show interpreter_hand("1+2+3+4+5+6+7+8+12345")
 @time @show interpreter_hand(onestxt)
+
+@show interpreter_regex("1+2")
+@show interpreter_regex("1+2+3+4")
+@show interpreter_regex("1+2+3+4+5+6+7+8+12345")
+@time @show interpreter_regex(onestxt)
 
 ## silly test example
 abstract Token123
