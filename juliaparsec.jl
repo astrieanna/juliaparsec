@@ -190,7 +190,7 @@ myzeroparser = zeroormore(parse_cat)
 @show myzeroparser("god")
 end
 
-numseq = 1000
+numseq = 100
 cats = fill!(Array(Function,numseq),parse_cat)
 catstext = "cat"^numseq    
 seq1parser = sequence(cats)
