@@ -148,22 +148,25 @@ function interpreter_hand(line)
     return sum
 end
 
-numones =  50000
+numones =  5000
 
 @show interpreter("1+2")
 @show interpreter("1+2+3+4")
 @show interpreter("1+2+3+4+5+6+7+8+12345")
 onestxt = join(ones(Int,numones),"+")
+interpreter(onestxt)
 @time @show interpreter(onestxt)
 
 @show interpreter_codegen("1+2")
 @show interpreter_codegen("1+2+3+4")
 @show interpreter_codegen("1+2+3+4+5+6+7+8+12345")
+interpreter_codegen(onestxt)    
 @time @show interpreter_codegen(onestxt)
 
 @show interpreter_hand("1+2")
 @show interpreter_hand("1+2+3+4")
 @show interpreter_hand("1+2+3+4+5+6+7+8+12345")
+interpreter_hand(onestxt)
 @time @show interpreter_hand(onestxt)
 
 ## silly test example
@@ -217,13 +220,19 @@ cats = fill!(Array(Function,numseq),parse_cat)
 catstext = "cat"^numseq    
 seq1parser = sequence(cats)
 seq2parser = sequence2(cats)
+print("seq / seq2 JIT\n")
+@time seq1parser(catstext)
+@time seq2parser(catstext)
 print("seq / seq2 test\n")
 @time seq1parser(catstext)
 @time seq2parser(catstext)
 
 branch1parser = branch(cats)
 branch2parser = branch2(cats)
+print("branch / branch2 JIT\n")    
+@time branch1parser(catstext)
+@time branch2parser(catstext)    
 print("branch / branch2 test\n")
 @time branch1parser(catstext)
 @time branch2parser(catstext)
-    
+require("Profile")
