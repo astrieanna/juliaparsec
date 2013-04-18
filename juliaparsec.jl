@@ -195,6 +195,13 @@ cats = fill!(Array(Function,numseq),parse_cat)
 catstext = "cat"^numseq    
 seq1parser = sequence(cats)
 seq2parser = sequence2(cats)
+print("seq / seq2 test\n")
 @time seq1parser(catstext)
 @time seq2parser(catstext)
+
+branch1parser = branch(cats)
+branch2parser = branch2(cats)
+print("branch / branch2 test\n")
+@time branch1parser(catstext)
+@time branch2parser(catstext)
     
