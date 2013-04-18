@@ -164,7 +164,7 @@ function interpreter_regex(line)
   end
   return sum
 end
-numones =  20000
+numones =  5000
 
 @show interpreter("1+2")
 @show interpreter("1+2+3+4")
@@ -238,13 +238,19 @@ cats = fill!(Array(Function,numseq),parse_cat)
 catstext = "cat"^numseq    
 seq1parser = sequence(cats)
 seq2parser = sequence2(cats)
+print("seq / seq2 JIT\n")
+@time seq1parser(catstext)
+@time seq2parser(catstext)
 print("seq / seq2 test\n")
 @time seq1parser(catstext)
 @time seq2parser(catstext)
 
 branch1parser = branch(cats)
 branch2parser = branch2(cats)
+print("branch / branch2 JIT\n")    
+@time branch1parser(catstext)
+@time branch2parser(catstext)    
 print("branch / branch2 test\n")
 @time branch1parser(catstext)
 @time branch2parser(catstext)
-    
+require("Profile")
