@@ -17,14 +17,6 @@ function sequence(fs::Array{Function,1})
     end
 end
 
-macro sequence_m(n)
-    if n != 0
-        :(1 + @sequence_m $(n-1))
-    else
-        0
-    end
-end
-
 function sequence2(fs::Array{Function,1})
     f = quote function(xs) end end
     push!(f.args[2].args[2].args, :(result = Array(Any,length($fs))))
