@@ -164,28 +164,28 @@ function interpreter_regex(line)
   end
   return sum
 end
-numones =  50000
+numones =  20000
 
 @show interpreter("1+2")
 @show interpreter("1+2+3+4")
 @show interpreter("1+2+3+4+5+6+7+8+12345")
 onestxt = join(ones(Int,numones),"+")
-@time @show interpreter(onestxt)
+@show median([@elapsed interpreter(onestxt) for x = 1:10])
 
 @show interpreter_codegen("1+2")
 @show interpreter_codegen("1+2+3+4")
 @show interpreter_codegen("1+2+3+4+5+6+7+8+12345")
-@time @show interpreter_codegen(onestxt)
+@show median([@elapsed interpreter_codegen(onestxt) for x = 1:10])
 
 @show interpreter_hand("1+2")
 @show interpreter_hand("1+2+3+4")
 @show interpreter_hand("1+2+3+4+5+6+7+8+12345")
-@time @show interpreter_hand(onestxt)
+@show median([@elapsed interpreter_hand(onestxt) for x = 1:10])
 
 @show interpreter_regex("1+2")
 @show interpreter_regex("1+2+3+4")
 @show interpreter_regex("1+2+3+4+5+6+7+8+12345")
-@time @show interpreter_regex(onestxt)
+@show median([@elapsed interpreter_regex(onestxt) for x = 1:10])
 
 ## silly test example
 abstract Token123
