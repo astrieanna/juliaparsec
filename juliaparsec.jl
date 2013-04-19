@@ -104,6 +104,35 @@ function parse_one_expr_hand(str)
   return nothing 
 end
 
+function parse_char(xs,c,p)
+  if p > length(xs) return nothing end
+  xs[p] == c ? (c,p+1) : nothing
+end
+function parse_num(xs,p)
+  digits = ['0','1','2','3','4','5','6','7','8','9']
+  numstr = ""
+  while p <= length(xs) && contains(digits,xs[p])
+    numstr = "$numstr$(xs[p])"
+    p += 1
+  end
+  return numstr == "" ? nothing : (parseint(numstr),p)
+end
+function parse_one_expr_strpos(str)
+  arr = Array(Any,0)
+  pos = 1
+  result = parse_num(str,pos)
+  while result != nothing
+    x,pos = result
+    push!(arr,Digit(x))
+    result = parse_char(str,'+',pos)
+    if (result==nothing) return arr end
+    x,pos = result
+    push!(arr,Plus())
+    result = parse_num(str,pos)
+  end
+  return nothing
+end
+
 function interpreter(line)
     result = parse_one_expr(line)
     if result == nothing
@@ -164,7 +193,23 @@ function interpreter_regex(line)
   end
   return sum
 end
-numones =  5000
+
+function interpreter_strpos(line)
+    result = parse_one_expr_strpos(line)
+    if result == nothing
+        return
+    end
+    sum = 0
+    for ex = result
+      if ex != Plus()
+        sum += ex.value
+      end
+    end
+    return sum
+end
+
+
+numones =  50000
 
 @show interpreter("1+2")
 @show interpreter("1+2+3+4")
@@ -186,6 +231,11 @@ onestxt = join(ones(Int,numones),"+")
 @show interpreter_regex("1+2+3+4")
 @show interpreter_regex("1+2+3+4+5+6+7+8+12345")
 @show median([@elapsed interpreter_regex(onestxt) for x = 1:10])
+
+@show interpreter_strpos("1+2")
+@show interpreter_strpos("1+2+3+4")
+@show interpreter_strpos("1+2+3+4+5+6+7+8+12345")
+@show median([@elapsed interpreter_strpos(onestxt) for x = 1:10])
 
 ## silly test example
 abstract Token123
