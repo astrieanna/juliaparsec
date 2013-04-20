@@ -1,6 +1,6 @@
-require("Profile")
-using IProfile
-@iprofile begin
+#require("Profile")
+#using IProfile
+#@iprofile begin
 
 function sequence(fs::Array{Function,1})
     function (xs,pos)
@@ -285,6 +285,8 @@ function parse_dog(xs,pos)
  return (Dog(),p2)
 end
 
+#end #@iprofile begin    
+
 if(false)
 myparser = branch([parse_cat,parse_dog])
 @show myparser("dog")
@@ -343,6 +345,4 @@ print("branch / branch2 JIT\n")
 print("branch / branch2 test\n")
 @time branch1parser(catstext,1)
 @time branch2parser(catstext,1)
-    
-
-end #@iprofile begin
+   
