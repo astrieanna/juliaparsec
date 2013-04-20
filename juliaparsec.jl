@@ -1,3 +1,7 @@
+require("Profile")
+using IProfile
+@iprofile begin
+
 function sequence(fs::Array{Function,1})
     function (xs,pos)
         acc = Array(Any,length(fs))
@@ -214,7 +218,7 @@ function interpreter_strpos(line)
 end
 
 
-numones =  500000
+numones =  500
 
 @show interpreter("1+2")
 @show interpreter("1+2+3+4")
@@ -319,7 +323,7 @@ myzeroparser = zeroormore(parse_cat)
 @show myzeroparser("god")
 end
 
-numseq = 1000
+numseq = 100
 cats = fill!(Array(Function,numseq),parse_cat)
 catstext = "cat"^numseq    
 seq1parser = sequence(cats)
@@ -339,4 +343,6 @@ print("branch / branch2 JIT\n")
 print("branch / branch2 test\n")
 @time branch1parser(catstext,1)
 @time branch2parser(catstext,1)
-#require("Profile")
+    
+
+end #@iprofile begin
