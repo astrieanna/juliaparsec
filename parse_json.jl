@@ -1,3 +1,4 @@
+include("juliaparsec.jl")
 # Json = Object | Array
 # Array = [ (Value (, Value) *)? ]
 # Object = {(String : Value (, String : Value)*)?}
@@ -5,7 +6,8 @@
 # String = " _* " # no quote, except \" but not \\"
 # Value = String | Number | Object | Array | true | false | null 
 
-# parsewhitespace, parsekeyword, oneormore, zeroorone, parsechar
+# need to define: parsewhitespace, parsekeyword, 
+# oneormore, zeroorone, parsechar, eatnothings
 
 parsenumber = sequence([zeroorone('-'),oneormore(parsedigit)])
 parsestring = sequence([parsechar('"'),parseuntil('"'),parsechar('"')])
